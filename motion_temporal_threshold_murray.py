@@ -87,7 +87,104 @@ def calculate_contrast():
         this_contr = 0
         
     return(this_contr)
- 
+    
+def show_practice_trial():
+    win.flip()
+    # randomly set motion direction of grating on each trial
+    if (round(numpy.random.random())) > 0.5:
+        this_dir = +1 # leftward
+        this_dir_str='left'
+    else:
+        this_dir = -1 # rightward
+        this_dir_str='right'
+    
+    this_stim_secs = .5
+    this_grating_degree = 4
+    this_spf = 1.2
+    keep_going = 1
+    
+    pr_grating = visual.GratingStim(
+        win=win, name='grating_murray',units='deg', 
+        tex='sin', mask='gauss',
+        ori=params.grating_ori, pos=(0, 0), size=this_grating_degree, sf=this_spf, phase=0,
+        color=0, colorSpace='rgb', opacity=1, blendmode='avg',
+        texRes=128, interpolate=True, depth=0.0)
+    
+    # fixation until keypress
+    fixation.draw()
+    win.flip()
+    event.waitKeys()
+    win.flip()
+    
+    # ISI
+    core.wait(params.fixation_grating_isi)
+    
+    # show grating
+    start_time = clock.getTime()
+    while keep_going:
+        secs_from_start = (start_time - clock.getTime())
+        pr_grating.phase = this_dir*(secs_from_start/params.cyc_secs)
+        
+        # Modulate contrast
+        this_contr = .98
+        pr_grating.color = this_contr
+    
+        # Draw next grating component
+        pr_grating.draw()
+        win.flip()
+        grating_start = clock.getTime()
+    
+        # Start collecting responses
+        thisResp = None
+    
+        # Is stimulus presentation time over?
+        if (clock.getTime()-start_time > this_stim_secs):
+            win.flip()
+            keep_going = False 
+            
+        # check for quit (typically the Esc key)
+        if kb.getKeys(keyList=["escape"]):
+            thisResp = 0
+            rt = 0
+                    
+            print("Exiting program.")
+            core.quit()
+    
+    # clear screen, get response
+    if params.show_response_frame:
+        respond.draw()
+        win.flip()
+    start_resp_time = clock.getTime()
+    
+    # Show response fixation
+    while thisResp is None:
+        allKeys = event.waitKeys()
+        rt = clock.getTime() - start_resp_time
+        for thisKey in allKeys:
+            if ((thisKey == 'left' and this_dir == -1) or
+                (thisKey == 'right' and this_dir == +1)):
+                thisResp = 0 # incorrect
+            elif ((thisKey == 'left' and this_dir == +1) or
+                (thisKey == 'right' and this_dir == -1)):
+                thisResp = 1  # correct
+                
+                # Feedback
+                highA.play(loops=-1)    # Only first plays?
+                donut.draw()            # Try visual feedback for now
+            elif thisKey in ['q', 'escape']:
+                test = False
+                core.quit()  # abort experiment
+    #-----------------------------------------------------------------------------------------------------------
+    
+    win.flip()
+    if (thisResp == 0):
+        instructionsIncorrect.draw()
+    else:
+        instructionsCorrect.draw()
+    win.flip()
+    
+    # wait
+    core.wait(1)
 #-----------------------------------------------------------------------------------------------------------
 
 #dataFile.write('motion_dir,grating_ori,key_resp,grating_deg,contrast,spf,tf_hz,show_frames,frame_rate_hz,show_secs,correct,rt,grating_start,grating_end\n')
@@ -129,7 +226,7 @@ instructions3a = visual.TextStim(win, pos=[0, + 3],
 instructions3b = visual.TextStim(win, pos=[0, -3],
     text="Then press one of the arrow keys to start the display.")
 instructions4 = visual.TextStim(win, pos=[0, 0], text = 'Once the white dot appears, press the left arrow key if you see leftward motion and the right arrow key if you see rightward motion.\n\nIf you are not sure, just guess.\n\nYour goal is accuracy, not speed.')
-instructions5 = visual.TextStim(win, pos=[0, 0], text = 'To try an easy practice, press any key.')
+instructions5 = visual.TextStim(win, pos=[0, 0], text = 'To try some easy practice trials, hit any key to show the black fixation dot, look at the dot, and then press any key again to show the display.')
 instructionsIncorrect = visual.TextStim(win, pos=[0, 0], text = 'Almost. Make sure to pay close attention.')
 instructionsCorrect = visual.TextStim(win, pos=[0, 0], text = 'Awesome.')
 instructions6 = visual.TextStim(win, pos=[0, 0], text = 'Do you have any questions? If not, press any key to get started!')
@@ -171,7 +268,6 @@ dataFile = open(fileName + '.csv', 'w')
 write_trial_data_header()
 
 # welcome
-# welcome
 welcome.draw()
 win.flip()
 event.waitKeys()
@@ -200,82 +296,90 @@ instructions5.draw()
 win.flip()
 event.waitKeys()
 
-# Show sample
-this_dir = -1
-this_stim_secs = .5
-this_grating_degree = 4
-this_spf = 1
-keep_going = 1
+#-----------------------------------------------------------------------------------------------------------
+# Show sample 1
 
-pr_grating = visual.GratingStim(
-    win=win, name='grating_murray',units='deg', 
-    tex='sin', mask='gauss',
-    ori=params.grating_ori, pos=(0, 0), size=this_grating_degree, sf=this_spf, phase=0,
-    color=0, colorSpace='rgb', opacity=1, blendmode='avg',
-    texRes=128, interpolate=True, depth=0.0)
-
-start_time = clock.getTime()
-while keep_going:
-    secs_from_start = (start_time - clock.getTime())
-    pr_grating.phase = this_dir*(secs_from_start/params.cyc_secs)
-    
-    # Modulate contrast
-    this_contr = .98
-    pr_grating.color = this_contr
-
-    # Draw next grating component
-    pr_grating.draw()
-    win.flip()
-    grating_start = clock.getTime()
-
-    # Start collecting responses
-    thisResp = None
-
-    # Is stimulus presentation time over?
-    if (clock.getTime()-start_time > this_stim_secs):
-        win.flip()
-        keep_going = False 
-        
-    # check for quit (typically the Esc key)
-    if kb.getKeys(keyList=["escape"]):
-        thisResp = 0
-        rt = 0
-                
-        print("Exiting program.")
-        core.quit()
-
+# randomly set motion direction of grating on each trial
+#if (round(numpy.random.random())) > 0.5:
+#    this_dir = +1 # leftward
+#    this_dir_str='left'
+#else:
+#    this_dir = -1 # rightward
+#    this_dir_str='right'
+#
+#this_stim_secs = .5
+#this_grating_degree = 4
+#this_spf = 1.2
+#keep_going = 1
+#
+#pr_grating = visual.GratingStim(
+#    win=win, name='grating_murray',units='deg', 
+#    tex='sin', mask='gauss',
+#    ori=params.grating_ori, pos=(0, 0), size=this_grating_degree, sf=this_spf, phase=0,
+#    color=0, colorSpace='rgb', opacity=1, blendmode='avg',
+#    texRes=128, interpolate=True, depth=0.0)
+#
+#start_time = clock.getTime()
+#while keep_going:
+#    secs_from_start = (start_time - clock.getTime())
+#    pr_grating.phase = this_dir*(secs_from_start/params.cyc_secs)
+#    
+#    # Modulate contrast
+#    this_contr = .98
+#    pr_grating.color = this_contr
+#
+#    # Draw next grating component
+#    pr_grating.draw()
+#    win.flip()
+#    grating_start = clock.getTime()
+#
+#    # Start collecting responses
+#    thisResp = None
+#
+#    # Is stimulus presentation time over?
+#    if (clock.getTime()-start_time > this_stim_secs):
+#        win.flip()
+#        keep_going = False 
+#        
+#    # check for quit (typically the Esc key)
+#    if kb.getKeys(keyList=["escape"]):
+#        thisResp = 0
+#        rt = 0
+#                
+#        print("Exiting program.")
+#        core.quit()
+#
 # clear screen get response
-if params.show_response_frame:
-    respond.draw()
-    win.flip()
-start_resp_time = clock.getTime()
-
+#if params.show_response_frame:
+#    respond.draw()
+#    win.flip()
+#start_resp_time = clock.getTime()
+#
 # Show response fixation
-while thisResp is None:
-    allKeys = event.waitKeys()
-    rt = clock.getTime() - start_resp_time
-    for thisKey in allKeys:
-        if ((thisKey == 'left' and this_dir == -1) or
-            (thisKey == 'right' and this_dir == +1)):
-            thisResp = 0 # incorrect
-        elif ((thisKey == 'left' and this_dir == +1) or
-            (thisKey == 'right' and this_dir == -1)):
-            thisResp = 1  # correct
-            
-            # Feedback
-            highA.play(loops=-1)    # Only first plays?
-            donut.draw()            # Try visual feedback for now
-        elif thisKey in ['q', 'escape']:
-            test = False
-            core.quit()  # abort experiment
+#while thisResp is None:
+#    allKeys = event.waitKeys()
+#    rt = clock.getTime() - start_resp_time
+#    for thisKey in allKeys:
+#        if ((thisKey == 'left' and this_dir == -1) or
+#            (thisKey == 'right' and this_dir == +1)):
+#            thisResp = 0 # incorrect
+#        elif ((thisKey == 'left' and this_dir == +1) or
+#            (thisKey == 'right' and this_dir == -1)):
+#            thisResp = 1  # correct
+#            
+#            # Feedback
+#            highA.play(loops=-1)    # Only first plays?
+#            donut.draw()            # Try visual feedback for now
+#        elif thisKey in ['q', 'escape']:
+#            test = False
+#            core.quit()  # abort experiment
+#-----------------------------------------------------------------------------------------------------------
 
-win.flip()
-if (thisResp == 0):
-    instructionsIncorrect.draw()
-else:
-    instructionsCorrect.draw()
-win.flip()
-event.waitKeys()
+show_practice_trial()
+show_practice_trial()
+show_practice_trial()
+show_practice_trial()
+show_practice_trial()
 
 instructions6.draw()
 win.flip()
