@@ -53,25 +53,25 @@ def write_trial_data_header():
     dataFile.write('observer,gender,')
     dataFile.write('motion_dir,grating_ori,key_resp,grating_deg')
     dataFile.write(',contrast,spf,tf_hz,stim_secs')
-    dataFile.write(',frame_rate_hz,correct,rt')
+    dataFile.write(',frame_rate_hz,frameDur,correct,rt')
     dataFile.write(',grating_start,grating_end\n')
 
 def write_trial_data_to_file():
     dataFile.write('%s,%s' % (expInfo['observer'], expInfo['gender']))
     dataFile.write('%i,%i,%s,%2.2f' % (this_dir, params.grating_ori, thisKey, this_grating_degree))
     dataFile.write(',%.3f,%.3f,%.3f,%.3f' % (this_max_contrast, this_spf, this_tf, this_stim_secs))
-    dataFile.write(',%.3f,%i,%.3f' % (params.frameDur, thisResp, rt))
+    dataFile.write(',%.3f,%i,%.3f' % (frameRate, frameDur, thisResp, rt))
     dataFile.write(',%.3f,%.3f\n' % (start_resp_time, clock.getTime()))
     
 def calculate_contrast():
     if params.contrast_mod_type == 'fixed_trapezoidal':
         secs_passed = clock.getTime()-start_time
         if secs_passed <= params.ramp_up_secs:
-            this_contr = (secs_passed/params.ramp_up_secs)*this_max_contrast
-        elif (secs_passed > params.ramp_up_secs) & (secs_passed <= params.ramp_up_secs + params.full_scale_secs):
+            this_contr = 0.5 * (secs_passed/params.ramp_up_secs)*this_max_contrast + 0.5 * this_max_contrast
+        elif (secs_passed > params.ramp_up_secs) & (secs_passed <= this_stim_secs-params.ramp_down_secs):
             this_contr = this_max_contrast
         else:
-            this_contr = ((params.stim_dur_secs - secs_passed)/params.ramp_up_secs)*this_max_contrast
+            this_contr = 0.5*this_max_contrast+((this_stim_secs - secs_passed)/params.ramp_down_secs)*0.5* this_max_contrast
     elif params.contrast_mod_type == 'variable_triangular': # linear ramp up for half of this_stim_secs, then ramp down
         secs_passed = clock.getTime()-start_time
         if secs_passed <= this_stim_secs * 0.5: # first half
@@ -267,6 +267,13 @@ try:  # try to get a previous parameters file
 except:  # if not there then use a default set
     expInfo = {'gender':'','observer':time.strftime("%Y-%m-%d-%H%M%S")}
 
+# get the real frame rate of the monitor
+frameRate= win.getActualFrameRate()
+if frameRate != None:
+    frameDur = 1.0 / round(frameRate)
+else:
+    frameDur = 1.0 / frame_rate_hz  # could not measure, so guess
+    
 # present a dialog to change params
 dlg = gui.DlgFromDict(expInfo, title='Motion Temporal threshold', fixed=['date'])
 if dlg.OK:

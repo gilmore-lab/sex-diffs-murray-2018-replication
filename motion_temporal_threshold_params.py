@@ -18,8 +18,8 @@ Retrieved from http://dx.doi.org/10.1016/j.cub.2018.06.014
 monitor_name = 'testMonitor'
 window_pix_h = 800
 window_pix_v = 600
-frame_rate_hz = 60
-frameDur = 1/frame_rate_hz
+frame_rate_hz = 72
+frameDura = 1/frame_rate_hz
 
 # Data file parameters
 task_name = "temp_thresh"               # Murray et al. temporal threshold
@@ -30,10 +30,10 @@ fixation_grating_isi = .15              # Fixation/grating ISI
 
 #--- Grating
 #contrast_mod_type = 'fixed_trapezoidal' # Ramp up, constant, ramp down, e.g., Abramov et al. 2012
-stim_dur_secs = 2                       # Total grating duration
-ramp_up_secs = .5                       # Ramp up duration
-full_scale_secs = 1                     # Full-scale (constant contrast) duration
-ramp_dn_secs = ramp_up_secs             # Ramp down duration
+# stim_dur_secs = 2                       # Total grating duration
+ramp_up_secs = frameDur                       # Ramp up duration
+# full_scale_secs = 1                     # Full-scale (constant contrast) duration
+ramp_dn_secs = frameDur             # Ramp down duration
 
 contrast_mod_type = 'variable_triangular'  # 'variable_triangular', 'fixed_trapezoidal'
 
