@@ -24,6 +24,7 @@ from psychopy.tools.filetools import fromFile, toFile
 from psychopy.visual import ShapeStim
 from psychopy.hardware import keyboard
 import time, numpy
+import os  # handy system and path functions
 
 # user-defined parameters
 import motion_temporal_threshold_params as params
@@ -249,11 +250,22 @@ win.flip()
 event.waitKeys()
 win.flip()
 
+# Ensure that relative paths start from the same directory as this script
+_thisDir = os.path.dirname(os.path.abspath(__file__))
+os.chdir(_thisDir)
+
+# Store info about the experiment session
+psychopyVersion = '3.2.4'
+expName = 'motion_temporal_threshold'  # from the Builder filename that created this script
+# expInfo['date'] = data.getDateStr()  # add a simple timestamp
+# expInfo['expName'] = expName
+# expInfo['psychopyVersion'] = psychopyVersion
+
 # enter participant info
 try:  # try to get a previous parameters file
     expInfo = fromFile('lastParams.pickle')
 except:  # if not there then use a default set
-    expInfo = {'observer':time.strftime("%Y-%m-%d-%H%M%S"),'gender':'?'}
+    expInfo = {'gender':'','observer':time.strftime("%Y-%m-%d-%H%M%S")}
 
 # present a dialog to change params
 dlg = gui.DlgFromDict(expInfo, title='Motion Temporal threshold', fixed=['date'])
@@ -263,7 +275,7 @@ else:
     core.quit()  # the user hit cancel so exit
 
 # make an output text file to save data
-fileName = 'csv/' + expInfo['observer'] + "_" + params.task_name
+fileName = _thisDir+os.sep+'data'+os.sep+ '%s_%s' % (expInfo['observer'] ,expName)
 dataFile = open(fileName + '.csv', 'w')
 write_trial_data_header()
 

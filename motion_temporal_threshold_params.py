@@ -58,7 +58,7 @@ staircase_style = 'quest'               # 'simple' or 'quest'
 staircase_ntrials = 30
 
 conditions_QUEST = [
-    {'label':'hi_contr', 'startVal':start_secs, 'startValSd':max_secs_sd, 'pThreshold':.82, 'max_contr':.95, 'minVal':min_secs, 'maxVal':max_secs, 
+    {'label':'hi_contr', 'startVal':start_secs, 'startValSd':max_secs_sd, 'pThreshold':.82, 'max_contr':.98, 'minVal':min_secs, 'maxVal':max_secs, 
     'grating_deg': grating_deg, 'spf':spf, 'tf':tf, 'mask_type': mask_type, 'gaussian_sd': gaussian_sd}
 ]
 #conditions_QUEST = [
