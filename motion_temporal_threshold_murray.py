@@ -65,11 +65,16 @@ def write_trial_data_to_file():
     
 def calculate_contrast():
     if params.contrast_mod_type == 'fixed_trapezoidal':
+        ramp_up_secs = frameDur 
+        ramp_down_secs = frameDur 
         secs_passed = clock.getTime()-start_time
-        if 0 <=secs_passed < params.ramp_up_secs:
-            this_contr =  0.5 * this_max_contrast
-        elif this_stim_secs >= secs_passed > this_stim_secs-params.ramp_down_secs:
-            this_contr = 0.5*this_max_contrast
+        if this_stim_secs>=3*frameDur:
+            if 0 <=secs_passed < params.ramp_up_secs:
+                this_contr =  0.5 * this_max_contrast
+            elif this_stim_secs >= secs_passed > this_stim_secs-params.ramp_down_secs:
+                this_contr = 0.5*this_max_contrast
+            else:
+                this_contr = this_max_contrast
         else:
             this_contr = this_max_contrast
     elif params.contrast_mod_type == 'variable_triangular': # linear ramp up for half of this_stim_secs, then ramp down
@@ -282,7 +287,7 @@ else:
     core.quit()  # the user hit cancel so exit
 
 # make an output text file to save data
-fileName = _thisDir+os.sep+'data'+os.sep+ '%s_%s' % (expInfo['observer'] ,expName)
+fileName = _thisDir+os.sep+'csv'+os.sep+ '%s_%s' % (expInfo['observer'] ,expName)
 dataFile = open(fileName + '.csv', 'w')
 write_trial_data_header()
 
