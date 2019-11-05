@@ -420,7 +420,7 @@ for current_run in total_run:
     else:
         staircase = data.MultiStairHandler(stairType='simple', conditions=params.conditions_simple, nTrials=params.staircase_ntrials)
     print('Created staircase: %s' % params.staircase_style)
-    if current_run<3:
+    if 0 <current_run:
         intru_break.draw()
         win.flip()
         event.waitKeys()
