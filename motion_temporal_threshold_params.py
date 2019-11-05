@@ -35,7 +35,7 @@ fixation_grating_isi = .15              # Fixation/grating ISI
 # full_scale_secs = 1                     # Full-scale (constant contrast) duration
 # ramp_dn_secs = frameDur             # Ramp down duration
 
-contrast_mod_type = 'variable_triangular'  # 'variable_triangular', 'fixed_trapezoidal'
+contrast_mod_type = 'fixed_trapezoidal'  # 'variable_triangular', 'fixed_trapezoidal'
 
 grating_deg = 3.5
 max_contr = .98
@@ -49,8 +49,8 @@ cyc_secs = 1/tf                         # seconds for one full cycle
 max_resp_secs = 10                       # max response period in secs
 
 # Staircase parameters
-start_secs = .333                       # starting duration in secs for temporal staircase
-max_secs = .5
+start_secs = .25                       # starting duration in secs for temporal staircase
+max_secs = .333
 max_secs_sd = .2
 min_secs = 2 *frameDuration                  # Require two frames to generate motion
 

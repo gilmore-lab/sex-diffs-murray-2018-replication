@@ -69,9 +69,9 @@ def calculate_contrast():
         ramp_down_secs = frameDur 
         secs_passed = clock.getTime()-start_time
         if this_stim_secs >= 3*frameDur:
-            if 0 <=secs_passed < params.ramp_up_secs:
+            if 0 <=secs_passed < ramp_up_secs:
                 this_contr =  0.5 * this_max_contrast
-            elif this_stim_secs >= secs_passed > this_stim_secs-params.ramp_down_secs:
+            elif this_stim_secs >= secs_passed > this_stim_secs-ramp_down_secs:
                 this_contr = 0.5*this_max_contrast
             else:
                 this_contr = this_max_contrast
@@ -222,21 +222,21 @@ donut = ShapeStim(win, vertices=donutVert, fillColor=params.donut_color, lineWid
 
 # text messages
 experimenter  = visual.TextStim(win, pos=[0, 0], 
-    text = 'This is the Motion Duration Threshold Study.\n\nPress any key to continue.')
+    text = 'This is the Motion Duration Threshold Study.\n\nPress SPACE bar to continue.')
 welcome  = visual.TextStim(win, pos=[0, 0], 
-    text = 'Welcome to the motion duration threshold study.\n\nPress any key to continue.')
+    text = 'Welcome to the motion duration threshold study.\n\nPress SPACE bar to continue.')
 instructions1 = visual.TextStim(win, pos=[0, 0], text = 'You will see a small patch of black and white stripes moving leftward or rightward.')
-instructions2 = visual.TextStim(win, pos=[0, 0], text = 'Your goal is to detect whether the patch is moving to the left or the right.')
+instructions2 = visual.TextStim(win, pos=[0, 0], text = 'Your goal is to detect whether the patch is moving to the left or the right.\n\nPress SPACE bar to continue.')
 instructions3a = visual.TextStim(win, pos=[0, + 3],
-    text='When the small black box appears, look at it.')
+    text='When the small black box appears, look at it.\n\nPress SPACE bar to continue.')
 instructions3b = visual.TextStim(win, pos=[0, -3],
-    text="Then press one of the arrow keys to start the display.")
-instructions4 = visual.TextStim(win, pos=[0, 0], text = 'Once the white dot appears, press the left arrow key if you see leftward motion and the right arrow key if you see rightward motion.\n\nIf you are not sure, just guess.\n\nYour goal is accuracy, not speed.')
-instructions5 = visual.TextStim(win, pos=[0, 0], text = 'To try some easy practice trials, hit any key to show the black fixation dot, look at the dot, and then press any key again to show the display.')
+    text="Then press one of the arrow keys or sapce bar to start the display.\n\nPress SPACE bar to continue.")
+instructions4 = visual.TextStim(win, pos=[0, 0], text = 'Once the white dot appears, press the left arrow key if you see leftward motion and the right arrow key if you see rightward motion.\n\nIf you are not sure, just guess.\n\nYour goal is accuracy, not speed.\n\nPress SPACE bar to continue.')
+instructions5 = visual.TextStim(win, pos=[0, 0], text = 'To try some easy practice trials, hit any key to show the black fixation dot, look at the dot, and then press any key again to show the display.\n\nPress SPACE bar to continue.')
 instructionsIncorrect = visual.TextStim(win, pos=[0, 0], text = 'Almost. Make sure to pay close attention.')
 instructionsCorrect = visual.TextStim(win, pos=[0, 0], text = 'Awesome.')
-instructions6 = visual.TextStim(win, pos=[0, 0], text = 'Do you have any questions? If not, press any key to get started!')
-
+instructions6 = visual.TextStim(win, pos=[0, 0], text = 'Do you have any questions? If not, press SPACE bar to get started!')
+thanksMsg = visual.TextStim(win, pos=[0, 0],text="You're done! You can contact the researcher outside the room and feel free to have a break if you need!")
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -409,7 +409,7 @@ win.flip()
 event.waitKeys()
 
 # Start staircase
-intru_break = visual.TextStim(win, pos=[0, 0], text = 'Press any key to continue.')
+intru_break = visual.TextStim(win, pos=[0, 0], text = 'Press SPACE bar to continue.')
 
 current_run=0
 total_run=range(4)
@@ -536,7 +536,9 @@ for current_run in total_run:
         # core.wait(rand_unif_int(params.iti_min, params.iti_max))
         core.wait(params.fixation_grating_isi)
 #-----------------------------------------------------------------------------------------------------------
-
+thanksMsg.draw()
+win.flip()
+event.waitKeys()
 #-----------------------------------------------------------------------------------------------------------
 # Save data and clean-up
 #-----------------------------------------------------------------------------------------------------------
