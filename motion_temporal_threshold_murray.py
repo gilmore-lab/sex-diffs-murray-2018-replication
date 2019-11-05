@@ -46,7 +46,7 @@ def rand_unif_int(min, max):
     
 def calculate_stim_duration(frames, frame_rate_hz):
     if frame_rate_hz == 0:
-        frame_rate_hz = 60
+        frame_rate_hz = frameRate
     return (frames/frame_rate_hz)
     
 def write_trial_data_header():
@@ -66,12 +66,12 @@ def write_trial_data_to_file():
 def calculate_contrast():
     if params.contrast_mod_type == 'fixed_trapezoidal':
         secs_passed = clock.getTime()-start_time
-        if secs_passed <= params.ramp_up_secs:
-            this_contr = 0.5 * (secs_passed/params.ramp_up_secs)*this_max_contrast + 0.5 * this_max_contrast
-        elif (secs_passed > params.ramp_up_secs) & (secs_passed <= this_stim_secs-params.ramp_down_secs):
-            this_contr = this_max_contrast
+        if 0 <=secs_passed < params.ramp_up_secs:
+            this_contr =  0.5 * this_max_contrast
+        elif this_stim_secs >= secs_passed > this_stim_secs-params.ramp_down_secs:
+            this_contr = 0.5*this_max_contrast
         else:
-            this_contr = 0.5*this_max_contrast+((this_stim_secs - secs_passed)/params.ramp_down_secs)*0.5* this_max_contrast
+            this_contr = this_max_contrast
     elif params.contrast_mod_type == 'variable_triangular': # linear ramp up for half of this_stim_secs, then ramp down
         secs_passed = clock.getTime()-start_time
         if secs_passed <= this_stim_secs * 0.5: # first half
