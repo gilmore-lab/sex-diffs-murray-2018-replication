@@ -50,17 +50,17 @@ def calculate_stim_duration(frames, frame_rate_hz):
     return (frames/frame_rate_hz)
     
 def write_trial_data_header():
-    dataFile.write('observer,gender,')
-    dataFile.write('motion_dir,grating_ori,key_resp,grating_deg')
+    dataFile.write('observer,gender')
+    dataFile.write(',motion_dir,grating_ori,key_resp,grating_deg')
     dataFile.write(',contrast,spf,tf_hz,stim_secs')
     dataFile.write(',frame_rate_hz,frameDur,correct,rt')
     dataFile.write(',grating_start,grating_end\n')
 
 def write_trial_data_to_file():
     dataFile.write('%s,%s' % (expInfo['observer'], expInfo['gender']))
-    dataFile.write('%i,%i,%s,%2.2f' % (this_dir, params.grating_ori, thisKey, this_grating_degree))
+    dataFile.write(',%.2f,%s,%s,%.2f' % (this_dir,this_dir_str, thisKey, this_grating_degree))
     dataFile.write(',%.3f,%.3f,%.3f,%.3f' % (this_max_contrast, this_spf, this_tf, this_stim_secs))
-    dataFile.write(',%.3f,%i,%.3f' % (frameRate, frameDur, thisResp, rt))
+    dataFile.write(',%.9f,%.9f,%.2f, %.9f' % (frameRate, frameDur, thisResp, rt))
     dataFile.write(',%.3f,%.3f\n' % (start_resp_time, clock.getTime()))
     
 def calculate_contrast():
@@ -68,7 +68,7 @@ def calculate_contrast():
         ramp_up_secs = frameDur 
         ramp_down_secs = frameDur 
         secs_passed = clock.getTime()-start_time
-        if this_stim_secs>=3*frameDur:
+        if this_stim_secs >= 3*frameDur:
             if 0 <=secs_passed < params.ramp_up_secs:
                 this_contr =  0.5 * this_max_contrast
             elif this_stim_secs >= secs_passed > this_stim_secs-params.ramp_down_secs:
@@ -237,13 +237,7 @@ instructionsIncorrect = visual.TextStim(win, pos=[0, 0], text = 'Almost. Make su
 instructionsCorrect = visual.TextStim(win, pos=[0, 0], text = 'Awesome.')
 instructions6 = visual.TextStim(win, pos=[0, 0], text = 'Do you have any questions? If not, press any key to get started!')
 
-print(params.staircase_ntrials)
-# create the staircase handler
-if params.staircase_style == 'quest':
-    staircase = data.MultiStairHandler(stairType='quest', conditions=params.conditions_QUEST,  nTrials=params.staircase_ntrials)
-else:
-    staircase = data.MultiStairHandler(stairType='simple', conditions=params.conditions_simple, nTrials=params.staircase_ntrials)
-print('Created staircase: %s' % params.staircase_style)
+
 
 #-----------------------------------------------------------------------------------------------------------
 # Start experiment
@@ -404,121 +398,143 @@ show_practice_trial()
 show_practice_trial()
 show_practice_trial()
 show_practice_trial()
+show_practice_trial()
+show_practice_trial()
+show_practice_trial()
+show_practice_trial()
+show_practice_trial()
 
 instructions6.draw()
 win.flip()
 event.waitKeys()
 
 # Start staircase
-n_trials = 0
-for this_stim_secs, this_condition in staircase:
-    
-    # Print trial number, condition info to console
-    n_trials += 1
-    print('trial:', str(n_trials), 'condition: ' + this_condition['label'] + " | " + 'stim_secs: ' + str(this_stim_secs))
-    
-    # Initialize grating parameters for this condition
-    this_max_contrast = this_condition['max_contr']
-    this_grating_degree = this_condition['grating_deg']
-    this_tf = this_condition['tf']
-    this_spf = this_condition['spf']
+intru_break = visual.TextStim(win, pos=[0, 0], text = 'Press any key to continue.')
 
-    # randomly set motion direction of grating on each trial
-    if (round(numpy.random.random())) > 0.5:
-        this_dir = +1 # leftward
-        this_dir_str='left'
+current_run=0
+total_run=range(4)
+for current_run in total_run:
+    # create the staircase handler
+    if params.staircase_style == 'QUEST':
+        staircase = data.MultiStairHandler(stairType='QUEST', conditions=params.conditions_QUEST,  nTrials=params.staircase_ntrials)
     else:
-        this_dir = -1 # rightward
-        this_dir_str='right'
-    
-    # draw initial grating
-    pr_grating = visual.GratingStim(
-        win=win, name='grating_murray',units='deg', 
-        tex='sin', mask=this_condition['mask_type'],
-        ori=params.grating_ori, pos=(0, 0), size=this_grating_degree, sf=this_spf, phase=0,
-        color=0, colorSpace='rgb', opacity=1, blendmode='avg',
-        texRes=128, interpolate=True, depth=0.0)
-    
-    # Show fixation until key press
-    fixation.draw()
-    win.flip()
-    event.waitKeys()
-    win.flip()
-    
-    # ISI (uniform within [isi_min, isi_max])
-    core.wait(params.fixation_grating_isi)
-    
-    # draw grating
-    keep_going = True
-    start_time = clock.getTime()
-    while keep_going:
-        secs_from_start = (start_time - clock.getTime())
-        pr_grating.phase = this_dir*(secs_from_start/params.cyc_secs)
+        staircase = data.MultiStairHandler(stairType='simple', conditions=params.conditions_simple, nTrials=params.staircase_ntrials)
+    print('Created staircase: %s' % params.staircase_style)
+    if current_run<3:
+        intru_break.draw()
+        win.flip()
+        event.waitKeys()
+    current_run=current_run+1
+    n_trials = 0
+    for this_stim_secs, this_condition in staircase:
         
-        # Modulate contrast
-        this_contr = calculate_contrast()
-        pr_grating.color = this_contr
-
-        # Draw next grating component
-        pr_grating.draw()
+        # Print trial number, condition info to console
+        n_trials += 1
+        print('trial:', str(n_trials), 'condition: ' + this_condition['label'] + " | " + 'stim_secs: ' + str(this_stim_secs))
+        
+        # Initialize grating parameters for this condition
+        this_max_contrast = this_condition['max_contr']
+        this_grating_degree = this_condition['grating_deg']
+        this_tf = this_condition['tf']
+        this_spf = this_condition['spf']
+    
+        # randomly set motion direction of grating on each trial
+        if (round(numpy.random.random())) > 0.5:
+            this_dir = +1 # leftward
+            this_dir_str='left'
+        else:
+            this_dir = -1 # rightward
+            this_dir_str='right'
+        
+        # draw initial grating
+        pr_grating = visual.GratingStim(
+            win=win, name='grating_murray',units='deg', 
+            tex='sin', mask=this_condition['mask_type'],
+            ori=params.grating_ori, pos=(0, 0), size=this_grating_degree, sf=this_spf, phase=0,
+            color=0, colorSpace='rgb', opacity=1, blendmode='avg',
+            texRes=128, interpolate=True, depth=0.0)
+        
+        # Show fixation until key press
+        fixation.draw()
         win.flip()
-        grating_start = clock.getTime()
-
-        # Start collecting responses
-        thisResp = None
-
-        # Is stimulus presentation time over?
-        if (clock.getTime()-start_time > this_stim_secs):
+        event.waitKeys()
+        win.flip()
+        
+        # ISI (uniform within [isi_min, isi_max])
+        core.wait(params.fixation_grating_isi)
+        
+        # draw grating
+        keep_going = True
+        start_time = clock.getTime()
+        while keep_going:
+            secs_from_start = (start_time - clock.getTime())
+            pr_grating.phase = this_dir*(secs_from_start/params.cyc_secs)
+            
+            # Modulate contrast
+            this_contr = calculate_contrast()
+            pr_grating.color = this_contr
+    
+            # Draw next grating component
+            pr_grating.draw()
             win.flip()
-            keep_going = False 
-            
-        # check for quit (typically the Esc key)
-        if kb.getKeys(keyList=["escape"]):
-            thisResp = 0
-            rt = 0
-            
-            print("Saving data.")
-            write_trial_data_to_file()
-            
-            print("Exiting program.")
-            core.quit()
-
-    # clear screen get response
-    if params.show_response_frame:
-        respond.draw()
-        win.flip()
-    start_resp_time = clock.getTime()
+            grating_start = clock.getTime()
     
-    # Show response fixation
-    while thisResp is None:
-        allKeys = event.waitKeys()
-        rt = clock.getTime() - start_resp_time
-        for thisKey in allKeys:
-            if ((thisKey == 'left' and this_dir == -1) or
-                (thisKey == 'right' and this_dir == +1)):
-                thisResp = 0 # incorrect
-            elif ((thisKey == 'left' and this_dir == +1) or
-                (thisKey == 'right' and this_dir == -1)):
-                thisResp = 1  # correct
-                
-                # Feedback
-                highA.play(loops=-1)    # Only first plays?
-                donut.draw()            # Try visual feedback for now
+            # Start collecting responses
+            thisResp = None
+    
+            # Is stimulus presentation time over?
+            if (clock.getTime()-start_time > this_stim_secs):
                 win.flip()
-            elif thisKey in ['q', 'escape']:
-                test = False
-                core.quit()  # abort experiment
-        event.clearEvents('mouse')  # only really needed for pygame windows
-
-    # add the data to the staircase so it can calculate the next level
-    staircase.addResponse(thisResp)
+                keep_going = False 
+                
+            # check for quit (typically the Esc key)
+            if kb.getKeys(keyList=["escape"]):
+                thisResp = 0
+                rt = 0
+                
+                print("Saving data.")
+                write_trial_data_to_file()
+                
+                print("Exiting program.")
+                core.quit()
     
-    # Write data to file
-    write_trial_data_to_file()
-
-    # Clear screen and ITI
-    win.flip()
-    core.wait(rand_unif_int(params.iti_min, params.iti_max))
+        # clear screen get response
+        if params.show_response_frame:
+            respond.draw()
+            win.flip()
+        start_resp_time = clock.getTime()
+        
+        # Show response fixation
+        while thisResp is None:
+            allKeys = event.waitKeys()
+            rt = clock.getTime() - start_resp_time
+            for thisKey in allKeys:
+                if ((thisKey == 'left' and this_dir == -1) or
+                    (thisKey == 'right' and this_dir == +1)):
+                    thisResp = 0 # incorrect
+                elif ((thisKey == 'left' and this_dir == +1) or
+                    (thisKey == 'right' and this_dir == -1)):
+                    thisResp = 1  # correct
+                    
+                    # Feedback
+                    highA.play(loops=-1)    # Only first plays?
+                    donut.draw()            # Try visual feedback for now
+                    win.flip()
+                elif thisKey in ['q', 'escape']:
+                    test = False
+                    core.quit()  # abort experiment
+            event.clearEvents('mouse')  # only really needed for pygame windows
+    
+        # add the data to the staircase so it can calculate the next level
+        staircase.addResponse(thisResp)
+        
+        # Write data to file
+        write_trial_data_to_file()
+    
+        # Clear screen and ITI
+        win.flip()
+        # core.wait(rand_unif_int(params.iti_min, params.iti_max))
+        core.wait(fixation_grating_isi)
 #-----------------------------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------------

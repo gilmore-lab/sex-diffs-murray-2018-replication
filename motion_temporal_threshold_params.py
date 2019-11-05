@@ -54,7 +54,7 @@ max_secs = .5
 max_secs_sd = .2
 min_secs = 2 *frameDuration                  # Require two frames to generate motion
 
-staircase_style = 'quest'               # 'simple' or 'quest'
+staircase_style = 'QUEST'               # 'simple' or 'QUEST'
 staircase_ntrials = 30
 
 conditions_QUEST = [
