@@ -51,14 +51,14 @@ def calculate_stim_duration(frames, frame_rate_hz):
     
 def write_trial_data_header():
     dataFile.write('observer,gender')
-    dataFile.write(',trial_n, motion_dir,grating_ori,key_resp,grating_deg')
+    dataFile.write('run_n,trial_n, motion_dir,grating_ori,key_resp,grating_deg')
     dataFile.write(',contrast,spf,tf_hz,stim_secs')
     dataFile.write(',frame_rate_hz,frameDur,correct,rt')
     dataFile.write(',grating_start,grating_end\n')
 
 def write_trial_data_to_file():
     dataFile.write('%s,%s' % (expInfo['observer'], expInfo['gender']))
-    dataFile.write(',%i,%i,%s,%s,%.2f' % (n_trials,this_dir,this_dir_str, thisKey, this_grating_degree))
+    dataFile.write(',%i,%i,%s,%s,%.2f' % (current_run,n_trials,this_dir,this_dir_str, thisKey, this_grating_degree))
     dataFile.write(',%.3f,%.3f,%.3f,%.9f' % (this_max_contrast, this_spf, this_tf, this_stim_secs))
     dataFile.write(',%.9f,%.3f,%.2f, %.3f' % (frameRate, frameDur, thisResp, rt))
     dataFile.write(',%.3f,%.3f\n' % (start_resp_time, clock.getTime()))
