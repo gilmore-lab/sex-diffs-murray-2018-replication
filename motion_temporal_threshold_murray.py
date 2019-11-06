@@ -174,9 +174,6 @@ def show_practice_trial():
                 (thisKey == 'right' and this_dir == -1)):
                 thisResp = 1  # correct
                 
-                # Feedback
-                highA.play(loops=-1)    # Only first plays?
-                donut.draw()            # Try visual feedback for now
             elif thisKey in ['q', 'escape']:
                 test = False
                 core.quit()  # abort experiment
@@ -187,6 +184,9 @@ def show_practice_trial():
         instructionsIncorrect.draw()
     else:
         instructionsCorrect.draw()
+        # Feedback
+        beep.play(when=win)    # Only first plays?
+        donut.draw()            # Try visual feedback for now
     win.flip()
     
     # wait
@@ -200,8 +200,8 @@ clock = core.Clock()
 countDown = core.CountdownTimer()
 
 # sound
-highA = sound.Sound('A', octave=4, sampleRate=44100, secs=0.2, stereo=True, loops=-1)
-highA.setVolume(0.5)
+beep = sound.Sound('A', secs=0.2, stereo=True)
+beep.setVolume(1)
 
 # create window and stimuli
 win = visual.Window([params.window_pix_h, params.window_pix_v], allowGUI=False, monitor=params.monitor_name, units='deg')
@@ -221,8 +221,6 @@ donutVert = [[(-params.donut_outer_rad,-params.donut_outer_rad),(-params.donut_o
 donut = ShapeStim(win, vertices=donutVert, fillColor=params.donut_color, lineWidth=0, size=.75, pos=(0, 0))
 
 # text messages
-experimenter  = visual.TextStim(win, pos=[0, 0], 
-    text = 'This is the Motion Duration Threshold Study.\n\nPress SPACE bar to continue.')
 welcome  = visual.TextStim(win, pos=[0, 0], 
     text = 'Welcome to the motion duration threshold study.\n\nPress SPACE bar to continue.')
 instructions1 = visual.TextStim(win, pos=[0, 0], text = 'You will see a small patch of black and white stripes moving leftward or rightward.')
@@ -243,12 +241,6 @@ thanksMsg = visual.TextStim(win, pos=[0, 0],text="You're done! You can contact t
 # Start experiment
 #-----------------------------------------------------------------------------------------------------------
 
-# experimenter
-experimenter.draw()
-win.flip()
-event.waitKeys()
-win.flip()
-
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
@@ -256,29 +248,15 @@ os.chdir(_thisDir)
 # Store info about the experiment session
 psychopyVersion = '3.2.4'
 expName = 'motion_temporal_threshold'  # from the Builder filename that created this script
+expInfo = {'observer':time.strftime("%Y%m%d"),'Gender':''}
 # expInfo['date'] = data.getDateStr()  # add a simple timestamp
 # expInfo['expName'] = expName
 # expInfo['psychopyVersion'] = psychopyVersion
-
-# enter participant info
-try:  # try to get a previous parameters file
-    expInfo = fromFile('lastParams.pickle')
-except:  # if not there then use a default set
-    expInfo = {'gender':'','observer':time.strftime("%Y-%m-%d-%H%M%S")}
-
-# get the real frame rate of the monitor
-frameRate= win.getActualFrameRate()
-if frameRate != None:
-    frameDur = 1.0 / round(frameRate)
-else:
-    frameDur = 1.0 / frame_rate_hz  # could not measure, so guess
     
 # present a dialog to change params
-dlg = gui.DlgFromDict(expInfo, title='Motion Temporal threshold', fixed=['date'])
-if dlg.OK:
-    toFile('lastParams.pickle', expInfo)  # save params to file for next time
-else:
-    core.quit()  # the user hit cancel so exit
+dlg = gui.DlgFromDict(dictionary=expInfo, title=expName, fixed=['date'])
+if dlg.OK == False:
+    core.quit()  # user pressed cancel
 
 # make an output text file to save data
 fileName = _thisDir+os.sep+'csv'+os.sep+ '%s_%s' % (expInfo['observer'] ,expName)
@@ -409,7 +387,7 @@ win.flip()
 event.waitKeys()
 
 # Start staircase
-intru_break = visual.TextStim(win, pos=[0, 0], text = 'Press SPACE bar to continue.')
+intru_break = visual.TextStim(win, pos=[0, 0], text = 'Well done! You have finished one session of trials. Press SPACE bar to continue.')
 
 current_run=0
 total_run=range(4)
@@ -517,7 +495,7 @@ for current_run in total_run:
                     thisResp = 1  # correct
                     
                     # Feedback
-                    highA.play(loops=-1)    # Only first plays?
+                    highA.play(when=win)    # Only first plays?
                     donut.draw()            # Try visual feedback for now
                     win.flip()
                 elif thisKey in ['q', 'escape']:
