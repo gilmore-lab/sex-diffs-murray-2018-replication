@@ -7,6 +7,12 @@ Murray, S. O., Schallmo, M.-P., Kolodny, T., Millin, R., Kale, A., Thomas, P., R
 Sex Differences in Visual Motion Processing. Current biology: CB. 
 Retrieved from http://dx.doi.org/10.1016/j.cub.2018.06.014
 """
+from psychopy import visual
+# testMonitor
+monitor_name = 'testMonitor'
+window_pix_h = 800
+window_pix_v = 600
+win = visual.Window([window_pix_h, window_pix_v], allowGUI=False, monitor=monitor_name, units='deg')
 
 # fimi_grayscale
 #monitor_name = 'fimi_grayscale'
@@ -14,13 +20,14 @@ Retrieved from http://dx.doi.org/10.1016/j.cub.2018.06.014
 #window_pix_v = 1024
 #frameDur = 1/85
 
-# testMonitor
-monitor_name = 'testMonitor'
-window_pix_h = 800
-window_pix_v = 600
-frame_rate_hz = 60
-frameDur = 1/frame_rate_hz
-
+# get the real frame rate of the monitor
+frame_rate_hz = 85
+frameRate= win.getActualFrameRate()
+if frameRate != None:
+    frameDur = 1.0 / frameRate
+else:
+    frameDur = 1.0 / frame_rate_hz  # could not measure, so guess
+    
 # Data file parameters
 task_name = "temp_thresh"               # Murray et al. temporal threshold
 
@@ -30,12 +37,12 @@ fixation_grating_isi = .15              # Fixation/grating ISI
 
 #--- Grating
 #contrast_mod_type = 'fixed_trapezoidal' # Ramp up, constant, ramp down, e.g., Abramov et al. 2012
-stim_dur_secs = 2                       # Total grating duration
-ramp_up_secs = .5                       # Ramp up duration
-full_scale_secs = 1                     # Full-scale (constant contrast) duration
-ramp_dn_secs = ramp_up_secs             # Ramp down duration
+# stim_dur_secs = 2                       # Total grating duration
+# ramp_up_secs = frameDur                       # Ramp up duration
+# full_scale_secs = 1                     # Full-scale (constant contrast) duration
+# ramp_dn_secs = frameDur             # Ramp down duration
 
-contrast_mod_type = 'variable_triangular'  # 'variable_triangular', 'fixed_trapezoidal'
+contrast_mod_type = 'fixed_trapezoidal'  # 'variable_triangular', 'fixed_trapezoidal'
 
 grating_deg = 3.5
 max_contr = .98
@@ -49,16 +56,16 @@ cyc_secs = 1/tf                         # seconds for one full cycle
 max_resp_secs = 10                       # max response period in secs
 
 # Staircase parameters
-start_secs = .333                       # starting duration in secs for temporal staircase
-max_secs = .5
+start_secs = .25                       # starting duration in secs for temporal staircase
+max_secs = .333
 max_secs_sd = .2
-min_secs = 2 * frameDur                 # Require two frames to generate motion
+min_secs = 2 *frameDur                  # Require two frames to generate motion
 
-staircase_style = 'quest'               # 'simple' or 'quest'
+staircase_style = 'QUEST'               # 'simple' or 'QUEST'
 staircase_ntrials = 30
 
 conditions_QUEST = [
-    {'label':'hi_contr', 'startVal':start_secs, 'startValSd':max_secs_sd, 'pThreshold':.82, 'max_contr':.95, 'minVal':min_secs, 'maxVal':max_secs, 
+    {'label':'hi_contr', 'startVal':start_secs, 'startValSd':max_secs_sd, 'pThreshold':.82, 'max_contr':.98, 'minVal':min_secs, 'maxVal':max_secs, 
     'grating_deg': grating_deg, 'spf':spf, 'tf':tf, 'mask_type': mask_type, 'gaussian_sd': gaussian_sd}
 ]
 #conditions_QUEST = [
