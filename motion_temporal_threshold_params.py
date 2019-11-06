@@ -24,7 +24,7 @@ win = visual.Window([window_pix_h, window_pix_v], allowGUI=False, monitor=monito
 frame_rate_hz = 85
 frameRate= win.getActualFrameRate()
 if frameRate != None:
-    frameDur = 1.0 / round(frameRate)
+    frameDur = 1.0 / frameRate
 else:
     frameDur = 1.0 / frame_rate_hz  # could not measure, so guess
     

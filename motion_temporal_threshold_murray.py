@@ -44,31 +44,29 @@ def rand_unif_int(min, max):
         max = 0
     return (min + numpy.random.random()*(max-min))
     
-def calculate_stim_duration(frames, frame_rate_hz):
-    if frame_rate_hz == 0:
-        frame_rate_hz = frameRate
-    return (frames/frame_rate_hz)
+def calculate_stim_duration(frames, frameRate):
+    return (frames/frameRate)
     
 def write_trial_data_header():
     dataFile.write('observer,gender')
-    dataFile.write('run_n,trial_n, motion_dir,grating_ori,key_resp,grating_deg')
+    dataFile.write(',run_n,trial_n, motion_dir,grating_ori,key_resp,grating_deg')
     dataFile.write(',contrast,spf,tf_hz,stim_secs')
     dataFile.write(',frame_rate_hz,frameDur,correct,rt')
     dataFile.write(',grating_start,grating_end\n')
 
 def write_trial_data_to_file():
-    dataFile.write('%s,%s' % (expInfo['observer'], expInfo['gender']))
-    dataFile.write(',%i,%i,%s,%s,%.2f' % (current_run,n_trials,this_dir,this_dir_str, thisKey, this_grating_degree))
+    dataFile.write('%s,%s' % (expInfo['observer'], expInfo['Gender']))
+    dataFile.write(',%i,%i,%i,%s,%s,%.2f' % (current_run,n_trials,this_dir,this_dir_str, thisKey, this_grating_degree))
     dataFile.write(',%.3f,%.3f,%.3f,%.9f' % (this_max_contrast, this_spf, this_tf, this_stim_secs))
-    dataFile.write(',%.9f,%.3f,%.2f, %.3f' % (frameRate, frameDur, thisResp, rt))
+    dataFile.write(',%.9f,%.3f,%.2f, %.3f' % (params.frameRate, params.frameDur, thisResp, rt))
     dataFile.write(',%.3f,%.3f\n' % (start_resp_time, clock.getTime()))
     
 def calculate_contrast():
     if params.contrast_mod_type == 'fixed_trapezoidal':
-        ramp_up_secs = frameDur 
-        ramp_down_secs = frameDur 
+        ramp_up_secs = params.frameDur 
+        ramp_down_secs = params.frameDur 
         secs_passed = clock.getTime()-start_time
-        if this_stim_secs >= 3*frameDur:
+        if this_stim_secs >= 3*params.frameDur:
             if 0 <=secs_passed < ramp_up_secs:
                 this_contr =  0.5 * this_max_contrast
             elif this_stim_secs >= secs_passed > this_stim_secs-ramp_down_secs:
@@ -180,6 +178,8 @@ def show_practice_trial():
     #-----------------------------------------------------------------------------------------------------------
     
     win.flip()
+    beep.setSound('A', secs=0.2, hamming=True)
+    beep.setVolume(1)
     if (thisResp == 0):
         instructionsIncorrect.draw()
     else:
@@ -200,7 +200,7 @@ clock = core.Clock()
 countDown = core.CountdownTimer()
 
 # sound
-beep = sound.Sound('A', secs=0.2, stereo=True)
+beep = sound.Sound('A', secs=0.2, stereo=True, hamming=True)
 beep.setVolume(1)
 
 # create window and stimuli
@@ -223,10 +223,10 @@ donut = ShapeStim(win, vertices=donutVert, fillColor=params.donut_color, lineWid
 # text messages
 welcome  = visual.TextStim(win, pos=[0, 0], 
     text = 'Welcome to the motion duration threshold study.\n\nPress SPACE bar to continue.')
-instructions1 = visual.TextStim(win, pos=[0, 0], text = 'You will see a small patch of black and white stripes moving leftward or rightward.')
+instructions1 = visual.TextStim(win, pos=[0, 0], text = 'You will see a small patch of black and white stripes moving leftward or rightward.\n\nPress SPACE bar to continue.')
 instructions2 = visual.TextStim(win, pos=[0, 0], text = 'Your goal is to detect whether the patch is moving to the left or the right.\n\nPress SPACE bar to continue.')
 instructions3a = visual.TextStim(win, pos=[0, + 3],
-    text='When the small black box appears, look at it.\n\nPress SPACE bar to continue.')
+    text='When the small black box appears, look at it. ')
 instructions3b = visual.TextStim(win, pos=[0, -3],
     text="Then press one of the arrow keys or sapce bar to start the display.\n\nPress SPACE bar to continue.")
 instructions4 = visual.TextStim(win, pos=[0, 0], text = 'Once the white dot appears, press the left arrow key if you see leftward motion and the right arrow key if you see rightward motion.\n\nIf you are not sure, just guess.\n\nYour goal is accuracy, not speed.\n\nPress SPACE bar to continue.')
@@ -493,9 +493,10 @@ for current_run in total_run:
                 elif ((thisKey == 'left' and this_dir == +1) or
                     (thisKey == 'right' and this_dir == -1)):
                     thisResp = 1  # correct
-                    
+                    beep.setSound('A', secs=0.15, hamming=True)
+                    beep.setVolume(1)
                     # Feedback
-                    highA.play(when=win)    # Only first plays?
+                    beep.play(when=win)    # Only first plays?
                     donut.draw()            # Try visual feedback for now
                     win.flip()
                 elif thisKey in ['q', 'escape']:
