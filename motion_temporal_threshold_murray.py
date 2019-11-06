@@ -417,7 +417,7 @@ for current_run in total_run:
         this_spf = this_condition['spf']
     
         # randomly set motion direction of grating on each trial
-        if (round(numpy.random.random())) > 0.5:
+        if random()>0.5:
             this_dir = +1 # leftward
             this_dir_str='left'
         else:
