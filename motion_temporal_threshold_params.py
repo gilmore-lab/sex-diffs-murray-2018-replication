@@ -87,7 +87,7 @@ donut_color = [0, .75, 0]                  # Color
 
 # Interstimulus and intertrial timing
 iti = 3.0                               # Fixed ITI in secs
-isi_min = .250                          # Fixation/grating ISI min val
-isi_max = .500                          # Fixation/grating ISI max val
+isi_min = .300                          # Fixation/grating ISI min val
+isi_max = .750                          # Fixation/grating ISI max val
 iti_min = 1.0                           # ITI min val
 iti_max = 2.5                           # ITI max val

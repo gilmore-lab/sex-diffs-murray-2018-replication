@@ -19,18 +19,17 @@ Retrieved from http://dx.doi.org/10.1016/j.cub.2018.06.014
 
 # import external packages
 from __future__ import absolute_import, division, print_function
-from psychopy import core, visual, gui, data, event, sound
+from psychopy import locale_setup
+from psychopy import prefs
+from psychopy import core, visual, gui, data, event, sound, clock
 from psychopy.tools.filetools import fromFile, toFile
 from psychopy.visual import ShapeStim
 from psychopy.hardware import keyboard
-import time, numpy
+import time, numpy, sys
 import os  # handy system and path functions
 
 # user-defined parameters
 import motion_temporal_threshold_params as params
-
-# Set up hardware
-kb = keyboard.Keyboard()
 
 #-----------------------------------------------------------------------------------------------------------
 # Define helper functions
@@ -55,7 +54,7 @@ def write_trial_data_header():
     dataFile.write(',grating_start,grating_end\n')
 
 def write_trial_data_to_file():
-    dataFile.write('%s,%s' % (expInfo['observer'], expInfo['Gender']))
+    dataFile.write('%s,%s' % (expInfo['Participant'], expInfo['Gender']))
     dataFile.write(',%i,%i,%i,%s,%s,%.2f' % (current_run,n_trials,this_dir,this_dir_str, thisKey, this_grating_degree))
     dataFile.write(',%.3f,%.3f,%.3f,%.9f' % (this_max_contrast, this_spf, this_tf, this_stim_secs))
     dataFile.write(',%.9f,%.3f,%.2f, %.3f' % (params.frameRate, params.frameDur, thisResp, rt))
@@ -95,7 +94,7 @@ def calculate_contrast():
 def show_practice_trial():
     win.flip()
     # randomly set motion direction of grating on each trial
-    if (round(numpy.random.random())) > 0.5:
+    if numpy.random.random() >= 0.5:
         this_dir = +1 # leftward
         this_dir_str='left'
     else:
@@ -179,14 +178,14 @@ def show_practice_trial():
     
     win.flip()
     beep.setSound('A', secs=0.2, hamming=True)
-    beep.setVolume(1)
+    beep.setVolume(0.5)
     if (thisResp == 0):
         instructionsIncorrect.draw()
     else:
         instructionsCorrect.draw()
         # Feedback
         beep.play(when=win)    # Only first plays?
-        donut.draw()            # Try visual feedback for now
+        # donut.draw()            # Try visual feedback for now
     win.flip()
     
     # wait
@@ -194,17 +193,53 @@ def show_practice_trial():
 #-----------------------------------------------------------------------------------------------------------
 
 #dataFile.write('motion_dir,grating_ori,key_resp,grating_deg,contrast,spf,tf_hz,show_frames,frame_rate_hz,show_secs,correct,rt,grating_start,grating_end\n')
+#-----------------------------------------------------------------------------------------------------------
+# Start experiment
+#-----------------------------------------------------------------------------------------------------------
+
+# Ensure that relative paths start from the same directory as this script
+_thisDir = os.path.dirname(os.path.abspath(__file__))
+os.chdir(_thisDir)
+
+# Store info about the experiment session
+psychopyVersion = '3.2.4'
+expName = 'motion_temporal_threshold'  # from the Builder filename that created this script
+expInfo = {'Participant':time.strftime("%Y%m%d"),'Gender':''}
+# present a dialog to change params
+dlg = gui.DlgFromDict(dictionary=expInfo, sortKeys=False, title=expName)  # sortKeys=True: alphabetical order
+  # clean up the temporary background  
+if dlg.OK == False:
+    core.quit()  # user pressed cancel
+expInfo['date'] = data.getDateStr()  # add a simple timestamp
+expInfo['expName'] = expName
+expInfo['psychopyVersion'] = psychopyVersion
+
+# make an output text file to save data
+fileName = _thisDir + os.sep + 'motion_temporal_threshold_data' + os.sep + '%s_%s' % (expInfo['Participant'] ,expInfo['expName'])
+# An ExperimentHandler isn't essential but helps with data saving
+thisExp = data.ExperimentHandler(name=expName, version='',
+    extraInfo=expInfo, runtimeInfo=None,
+    originPath='/Users/yxq5055/Box/Project_Sex_difference_on_Motion_Perception/codes/psychopy_procedure.py',
+    savePickle=True, saveWideText=True,
+    dataFileName=fileName)
+dataFile = open(fileName + '.csv', 'w')
+write_trial_data_header()
+
+win = visual.Window([params.window_pix_h, params.window_pix_v],fullscr=True, screen=0, monitor=params.monitor_name, units='deg')
 
 # Clock variables
 clock = core.Clock()
 countDown = core.CountdownTimer()
-
+# Set up hardware
+kb = keyboard.Keyboard()
+#-----------------------------------------------------------------------------------------------------------
+# Start experiment
+#-----------------------------------------------------------------------------------------------------------
 # sound
 beep = sound.Sound('A', secs=0.2, stereo=True, hamming=True)
-beep.setVolume(1)
+beep.setVolume(0.5)
 
-# create window and stimuli
-win = visual.Window([params.window_pix_h, params.window_pix_v], allowGUI=False, monitor=params.monitor_name, units='deg')
+# create stimuli
 fixation = visual.GratingStim(win, color='black', tex=None, mask='circle', size=0.2)
 respond = visual.GratingStim(win, color='white', tex=None, mask='circle', size=0.3)
 
@@ -234,34 +269,12 @@ instructions5 = visual.TextStim(win, pos=[0, 0], text = 'To try some easy practi
 instructionsIncorrect = visual.TextStim(win, pos=[0, 0], text = 'Almost. Make sure to pay close attention.')
 instructionsCorrect = visual.TextStim(win, pos=[0, 0], text = 'Awesome.')
 instructions6 = visual.TextStim(win, pos=[0, 0], text = 'Do you have any questions? If not, press SPACE bar to get started!')
+instructions_practice=visual.TextStim(win, pos=[0, 0], text = 'Decide whether it is leftward or rightward motion.\nPress the space bar when you see the black dot to start. Press the arrow keys to make a response after you see the white dots. \n\nLet us have more practice trials. Press SPACE bar to continue.')
 thanksMsg = visual.TextStim(win, pos=[0, 0],text="You're done! You can contact the researcher outside the room and feel free to have a break if you need!")
 
-
 #-----------------------------------------------------------------------------------------------------------
-# Start experiment
+# experiment procedures
 #-----------------------------------------------------------------------------------------------------------
-
-# Ensure that relative paths start from the same directory as this script
-_thisDir = os.path.dirname(os.path.abspath(__file__))
-os.chdir(_thisDir)
-
-# Store info about the experiment session
-psychopyVersion = '3.2.4'
-expName = 'motion_temporal_threshold'  # from the Builder filename that created this script
-expInfo = {'observer':time.strftime("%Y%m%d"),'Gender':''}
-# expInfo['date'] = data.getDateStr()  # add a simple timestamp
-# expInfo['expName'] = expName
-# expInfo['psychopyVersion'] = psychopyVersion
-    
-# present a dialog to change params
-dlg = gui.DlgFromDict(dictionary=expInfo, title=expName, fixed=['date'])
-if dlg.OK == False:
-    core.quit()  # user pressed cancel
-
-# make an output text file to save data
-fileName = _thisDir+os.sep+'csv'+os.sep+ '%s_%s' % (expInfo['observer'] ,expName)
-dataFile = open(fileName + '.csv', 'w')
-write_trial_data_header()
 
 # welcome
 welcome.draw()
@@ -376,6 +389,9 @@ show_practice_trial()
 show_practice_trial()
 show_practice_trial()
 show_practice_trial()
+instructions_practice.draw()
+win.flip()
+event.waitKeys()
 show_practice_trial()
 show_practice_trial()
 show_practice_trial()
@@ -417,7 +433,7 @@ for current_run in total_run:
         this_spf = this_condition['spf']
     
         # randomly set motion direction of grating on each trial
-        if random()>0.5:
+        if numpy.random.random() >= 0.5:
             this_dir = +1 # leftward
             this_dir_str='left'
         else:
@@ -494,10 +510,10 @@ for current_run in total_run:
                     (thisKey == 'right' and this_dir == -1)):
                     thisResp = 1  # correct
                     beep.setSound('A', secs=0.15, hamming=True)
-                    beep.setVolume(1)
+                    beep.setVolume(0.5)
                     # Feedback
                     beep.play(when=win)    # Only first plays?
-                    donut.draw()            # Try visual feedback for now
+                    # donut.draw()            # Try visual feedback for now
                     win.flip()
                 elif thisKey in ['q', 'escape']:
                     test = False
@@ -512,8 +528,8 @@ for current_run in total_run:
     
         # Clear screen and ITI
         win.flip()
-        # core.wait(rand_unif_int(params.iti_min, params.iti_max))
-        core.wait(params.fixation_grating_isi)
+        core.wait(rand_unif_int(params.iti_min, params.iti_max))
+        # core.wait(params.fixation_grating_isi)
 #-----------------------------------------------------------------------------------------------------------
 thanksMsg.draw()
 win.flip()
