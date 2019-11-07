@@ -226,7 +226,13 @@ dataFile = open(fileName + '.csv', 'w')
 write_trial_data_header()
 
 win = visual.Window([params.window_pix_h, params.window_pix_v],fullscr=True, screen=0, monitor=params.monitor_name, units='deg')
-
+# get the real frame rate of the monitor
+frameRate= win.getActualFrameRate()
+if frameRate != None:
+    frameDur = 1.0 / frameRate
+else:
+    frameDur = 1.0 / params.frame_rate_hz  # could not measure, so guess
+    
 # Clock variables
 clock = core.Clock()
 countDown = core.CountdownTimer()

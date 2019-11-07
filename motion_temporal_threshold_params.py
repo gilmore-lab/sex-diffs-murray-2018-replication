@@ -7,27 +7,20 @@ Murray, S. O., Schallmo, M.-P., Kolodny, T., Millin, R., Kale, A., Thomas, P., R
 Sex Differences in Visual Motion Processing. Current biology: CB. 
 Retrieved from http://dx.doi.org/10.1016/j.cub.2018.06.014
 """
-from psychopy import visual
+# from psychopy import visual
 # testMonitor
 monitor_name = 'testMonitor'
 window_pix_h = 800
 window_pix_v = 600
-win = visual.Window([window_pix_h, window_pix_v], allowGUI=False, monitor=monitor_name, units='deg')
+# win = visual.Window([window_pix_h, window_pix_v], allowGUI=False, monitor=monitor_name, units='deg')
 
 # fimi_grayscale
 #monitor_name = 'fimi_grayscale'
 #window_pix_h = 1280
 #window_pix_v = 1024
 #frameDur = 1/85
-
-# get the real frame rate of the monitor
 frame_rate_hz = 85
-frameRate= win.getActualFrameRate()
-if frameRate != None:
-    frameDur = 1.0 / frameRate
-else:
-    frameDur = 1.0 / frame_rate_hz  # could not measure, so guess
-    
+
 # Data file parameters
 task_name = "temp_thresh"               # Murray et al. temporal threshold
 
@@ -59,7 +52,7 @@ max_resp_secs = 10                       # max response period in secs
 start_secs = .25                       # starting duration in secs for temporal staircase
 max_secs = .333
 max_secs_sd = .2
-min_secs = 2 *frameDur                  # Require two frames to generate motion
+min_secs = 2 * 1/85                  # Require two frames to generate motion
 
 staircase_style = 'QUEST'               # 'simple' or 'QUEST'
 staircase_ntrials = 30
