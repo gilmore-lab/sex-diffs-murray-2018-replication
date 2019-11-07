@@ -43,7 +43,7 @@ spf = 1.2
 mask_type = 'gauss'                    # 'circle' or 'gauss'
 gaussian_sd = 0.2
 grating_ori = 0                         # grating orientation in deg, 0 is vertical, 90 is horizontal
-tf = 4                                  # Hz
+tf = 4                                  # Hz or cycles/second
 cyc_secs = 1/tf                         # seconds for one full cycle
 
 max_resp_secs = 10                       # max response period in secs
