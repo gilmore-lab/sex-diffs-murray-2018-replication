@@ -27,6 +27,7 @@ from psychopy.visual import ShapeStim
 from psychopy.hardware import keyboard
 import time, numpy, sys
 import os  # handy system and path functions
+from scipy.stats import norm
 
 # user-defined parameters
 import motion_temporal_threshold_params as params
@@ -49,22 +50,22 @@ def calculate_stim_duration(frames, frameRate):
 def write_trial_data_header():
     dataFile.write('observer,gender')
     dataFile.write(',run_n,trial_n, motion_dir,grating_ori,key_resp,grating_deg')
-    dataFile.write(',contrast,spf,tf_hz,stim_secs')
+    dataFile.write(',contrast,spf,tf_hz,stim_secs,actual_frame, actual_stim_dur')
     dataFile.write(',frame_rate_hz,frameDur,correct,rt')
     dataFile.write(',grating_start,grating_end\n')
 
 def write_trial_data_to_file():
     dataFile.write('%s,%s' % (expInfo['Participant'], expInfo['Gender']))
     dataFile.write(',%i,%i,%i,%s,%s,%.2f' % (current_run,n_trials,this_dir,this_dir_str, thisKey, this_grating_degree))
-    dataFile.write(',%.3f,%.3f,%.3f,%.9f' % (this_max_contrast, this_spf, this_tf, this_stim_secs))
+    dataFile.write(',%.3f,%.3f,%.3f,%.9f' % (this_max_contrast, this_spf, this_tf, this_stim_secs,frame_n,actual_stim_secs))
     dataFile.write(',%.9f,%.3f,%.2f, %.3f' % (params.frameRate, params.frameDur, thisResp, rt))
     dataFile.write(',%.3f,%.3f\n' % (start_resp_time, clock.getTime()))
     
 def calculate_contrast():
     if params.contrast_mod_type == 'fixed_trapezoidal':
-        ramp_up_secs = params.frameDur 
-        ramp_down_secs = params.frameDur 
-        secs_passed = clock.getTime()-start_time
+            ramp_up_secs = params.frameDur 
+            ramp_down_secs = params.frameDur 
+            secs_passed = clock.getTime()-start_time
         if this_stim_secs >= 3*params.frameDur:
             if 0 <=secs_passed < ramp_up_secs:
                 this_contr =  0.5 * this_max_contrast
@@ -74,6 +75,30 @@ def calculate_contrast():
                 this_contr = this_max_contrast
         else:
             this_contr = this_max_contrast
+    elif params.contrast_mod_type == 'hybrid_gaussian':
+        frame_n=0
+        if this_stim_secs < 0.090:  # when sigma=0.015, assume 6 sigma is stimuli duration, it is 90ms, FWHM is 18ms.
+            secs_passed = clock.getTime()-start_time
+            sigma=this_stim_secs/6
+            mu = 3*sigma
+            # actual_stim_secs=0.7759*sigma*2
+            this_contr = norm(secs_passed,mu, sigma)*this_condition['max_contr']* sqrt(2*pi)*sigma
+            if this_contr>=0.5*this_condition['max_contr']
+                frame_n+=1
+            actual_stim_secs=frame_n*frameDur
+        else:
+            secs_passed = clock.getTime()-start_time
+            sigma=0.01
+            mu = 3*sigma
+            if secs_passed < mu:
+                this_contr = norm(secs_passed,mu, sigma)*this_condition['max_contr']* sqrt(2*pi)*sigma
+            elif secs_passed > (this_stim_secs-mu):
+                this_contr = norm(this_stim_secs-secs_passed, mu, sigma)*this_condition['max_contr']* sqrt(2*pi)*sigma
+            else:
+                this_contr = this_condition['max_contr']
+            if this_contr>=0.5*this_condition['max_contr']
+                frame_n+=1
+            actual_stim_secs=frame_n*frameDur
     elif params.contrast_mod_type == 'variable_triangular': # linear ramp up for half of this_stim_secs, then ramp down
         secs_passed = clock.getTime()-start_time
         if secs_passed <= this_stim_secs * 0.5: # first half

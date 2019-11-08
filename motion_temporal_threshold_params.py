@@ -35,7 +35,7 @@ fixation_grating_isi = .15              # Fixation/grating ISI
 # full_scale_secs = 1                     # Full-scale (constant contrast) duration
 # ramp_dn_secs = frameDur             # Ramp down duration
 
-contrast_mod_type = 'fixed_trapezoidal'  # 'variable_triangular', 'fixed_trapezoidal'
+contrast_mod_type = 'hybrid_gaussian'  # 'variable_triangular', 'fixed_trapezoidal', 'hybrid_gaussian'
 
 grating_deg = 3.5
 max_contr = .98
@@ -80,7 +80,7 @@ donut_color = [0, .75, 0]                  # Color
 
 # Interstimulus and intertrial timing
 iti = 3.0                               # Fixed ITI in secs
-isi_min = .300                          # Fixation/grating ISI min val
-isi_max = .750                          # Fixation/grating ISI max val
+isi_min = .20                          # Fixation/grating ISI min val
+isi_max = .50                          # Fixation/grating ISI max val
 iti_min = 1.0                           # ITI min val
 iti_max = 2.5                           # ITI max val
