@@ -76,10 +76,9 @@ def calculate_contrast():
         else:
             this_contr = this_max_contrast
     elif params.contrast_mod_type == 'hybrid_gaussian':
-        if this_stim_secs < frameDur*6:  # when sigma=0.015, assume 8 sigma is stimuli duration, it is 120ms, FWHM is 18ms.
-            # 5 sigma, 
+        if this_stim_secs < frameDur*6:  # when sigma=0.015, assume 8 sigma is stimuli duration, it is 120ms, FWHM is 18ms. 
             secs_passed = clock.getTime()-start_time
-            sigma=this_stim_secs/6
+            sigma=this_stim_secs/6  # 6 sigma
             mu = this_stim_secs/2
             # actual_stim_secs=0.7759*sigma*2
             this_contr = norm.pdf(secs_passed,mu, sigma)*this_condition['max_contr']* numpy.sqrt(2*numpy.pi)*sigma
@@ -284,9 +283,9 @@ instructions2 = visual.TextStim(win, pos=[0, 0], text = 'Your need to detect whe
 instructions3a = visual.TextStim(win, pos=[0, + 3],
     text='At first, you will see the small black dot appears, look at it. ')
 instructions3b = visual.TextStim(win, pos=[0, -3],
-    text="Then press SPACE bar to start the display, a small patch of black and white stripes. \n\nPress SPACE bar to continue.")
+    text="Then press SPACE bar to start the display. \n\nPress SPACE bar to continue.")
 instructions4 = visual.TextStim(win, pos=[0, 0], text = 'After the small patch of black and white stripes disappear, you will see a white dot. It is the response cue. Once the white dot appears, press the LEFT arrow key if you see leftward motion and the RIGHT arrow key if you see rightward motion.\n\nIf you are not sure, just guess.\n\nYour goal is accuracy, not speed.\n\nPress SPACE bar to continue.')
-instructions5 = visual.TextStim(win, pos=[0, 0], text = 'To try some easy practice trials, hit SPACE bar to show the black fixation dot, look at the dot, and then press any key again to show the display.\n\nPress SPACE bar to continue.')
+instructions5 = visual.TextStim(win, pos=[0, 0], text = 'Let us try some easy practice trials. \n\nPress SPACE bar to continue.')
 instructionsIncorrect = visual.TextStim(win, pos=[0, 0], text = 'Almost. Make sure to pay close attention.')
 instructionsCorrect = visual.TextStim(win, pos=[0, 0], text = 'Awesome.')
 instructions6 = visual.TextStim(win, pos=[0, 0], text = 'Do you have any questions? If not, press SPACE bar to get started!')
@@ -545,6 +544,10 @@ for current_run in total_run:
     
         # add the data to the staircase so it can calculate the next level
         staircase.addResponse(thisResp)
+        if this_stim_secs < frameDur*6:  # when sigma=0.015, assume 8 sigma is stimuli duration, it is 120ms, FWHM is 18ms. 
+            sigma=this_stim_secs/6
+        else:
+            sigma=frameDur
         actual_stim_secs=this_stim_secs-(6*sigma-0.7759*sigma*2)
         # Write data to file
         write_trial_data_to_file()
