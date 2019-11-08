@@ -534,6 +534,7 @@ for current_run in total_run:
                     test = False
                     core.quit()  # abort experiment
             event.clearEvents('mouse')  # only really needed for pygame windows
+            win.mouseVisible = False
     
         # add the data to the staircase so it can calculate the next level
         staircase.addResponse(thisResp)
@@ -549,8 +550,8 @@ for current_run in total_run:
         win.flip()
         core.wait(rand_unif_int(params.iti_min, params.iti_max))
         # core.wait(params.fixation_grating_isi)
-    if 0 <current_run:
-        message='Well done! You have finished Session %i. \n\nPress SPACE bar to continue.'%(current_run)
+    if current_run<3:
+        message='Well done! You have finished Session %i. \n\nPress SPACE bar to continue.'%(current_run+1)
         intru_break = visual.TextStim(win, pos=[0, 0], text = message)
         intru_break.draw()
         win.flip()
