@@ -7,27 +7,20 @@ Murray, S. O., Schallmo, M.-P., Kolodny, T., Millin, R., Kale, A., Thomas, P., R
 Sex Differences in Visual Motion Processing. Current biology: CB. 
 Retrieved from http://dx.doi.org/10.1016/j.cub.2018.06.014
 """
-from psychopy import visual
+# from psychopy import visual
 # testMonitor
 monitor_name = 'testMonitor'
 window_pix_h = 800
 window_pix_v = 600
-win = visual.Window([window_pix_h, window_pix_v], allowGUI=False, monitor=monitor_name, units='deg')
+# win = visual.Window([window_pix_h, window_pix_v], allowGUI=False, monitor=monitor_name, units='deg')
 
 # fimi_grayscale
 #monitor_name = 'fimi_grayscale'
 #window_pix_h = 1280
 #window_pix_v = 1024
 #frameDur = 1/85
-
-# get the real frame rate of the monitor
 frame_rate_hz = 85
-frameRate= win.getActualFrameRate()
-if frameRate != None:
-    frameDur = 1.0 / frameRate
-else:
-    frameDur = 1.0 / frame_rate_hz  # could not measure, so guess
-    
+
 # Data file parameters
 task_name = "temp_thresh"               # Murray et al. temporal threshold
 
@@ -42,7 +35,7 @@ fixation_grating_isi = .15              # Fixation/grating ISI
 # full_scale_secs = 1                     # Full-scale (constant contrast) duration
 # ramp_dn_secs = frameDur             # Ramp down duration
 
-contrast_mod_type = 'fixed_trapezoidal'  # 'variable_triangular', 'fixed_trapezoidal'
+contrast_mod_type = 'hybrid_gaussian'  # 'variable_triangular', 'fixed_trapezoidal', 'hybrid_gaussian'
 
 grating_deg = 3.5
 max_contr = .98
@@ -50,7 +43,7 @@ spf = 1.2
 mask_type = 'gauss'                    # 'circle' or 'gauss'
 gaussian_sd = 0.2
 grating_ori = 0                         # grating orientation in deg, 0 is vertical, 90 is horizontal
-tf = 4                                  # Hz
+tf = 4                                  # Hz or cycles/second
 cyc_secs = 1/tf                         # seconds for one full cycle
 
 max_resp_secs = 10                       # max response period in secs
@@ -59,7 +52,7 @@ max_resp_secs = 10                       # max response period in secs
 start_secs = .25                       # starting duration in secs for temporal staircase
 max_secs = .333
 max_secs_sd = .2
-min_secs = 2 *frameDur                  # Require two frames to generate motion
+min_secs = 2 * 1/85                  # Require two frames to generate motion
 
 staircase_style = 'QUEST'               # 'simple' or 'QUEST'
 staircase_ntrials = 30
@@ -87,8 +80,8 @@ donut_color = [0, .75, 0]                  # Color
 
 # Interstimulus and intertrial timing
 iti = 3.0                               # Fixed ITI in secs
-isi_min = .300                          # Fixation/grating ISI min val
-isi_max = .700                          # Fixation/grating ISI max val
+isi_min = .20                          # Fixation/grating ISI min val
+isi_max = .50                          # Fixation/grating ISI max val
 iti_min = 1.0                           # ITI min val
 iti_max = 2.5                           # ITI max val
 

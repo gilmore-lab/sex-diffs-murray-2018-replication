@@ -27,6 +27,7 @@ from psychopy.visual import ShapeStim
 from psychopy.hardware import keyboard
 import time, numpy, sys
 import os  # handy system and path functions
+from scipy.stats import norm
 
 # user-defined parameters
 import motion_temporal_threshold_params as params
@@ -49,15 +50,15 @@ def calculate_stim_duration(frames, frameRate):
 def write_trial_data_header():
     dataFile.write('observer,gender')
     dataFile.write(',run_n,trial_n, motion_dir,grating_ori,key_resp,grating_deg')
-    dataFile.write(',contrast,spf,tf_hz,stim_secs')
+    dataFile.write(',contrast,spf,tf_hz,stim_secs,actual_frame, actual_stim_dur')
     dataFile.write(',frame_rate_hz,frameDur,correct,rt')
     dataFile.write(',grating_start,grating_end\n')
 
 def write_trial_data_to_file():
     dataFile.write('%s,%s' % (expInfo['Participant'], expInfo['Gender']))
     dataFile.write(',%i,%i,%i,%s,%s,%.2f' % (current_run,n_trials,this_dir,this_dir_str, thisKey, this_grating_degree))
-    dataFile.write(',%.3f,%.3f,%.3f,%.9f' % (this_max_contrast, this_spf, this_tf, this_stim_secs))
-    dataFile.write(',%.9f,%.3f,%.2f, %.3f' % (params.frameRate, params.frameDur, thisResp, rt))
+    dataFile.write(',%.3f,%.3f,%.3f,%.9f,%i,%.9f' % (this_max_contrast, this_spf, this_tf, this_stim_secs,frame_n,actual_stim_secs))
+    dataFile.write(',%.9f,%.9f,%.2f, %.3f' % (frameRate, frameDur, thisResp, rt))
     dataFile.write(',%.3f,%.3f\n' % (start_resp_time, clock.getTime()))
     
 def calculate_contrast():
@@ -74,6 +75,25 @@ def calculate_contrast():
                 this_contr = this_max_contrast
         else:
             this_contr = this_max_contrast
+    elif params.contrast_mod_type == 'hybrid_gaussian':
+        if this_stim_secs < 0.750:  # when sigma=0.015, assume 8 sigma is stimuli duration, it is 120ms, FWHM is 18ms.
+            # 5 sigma, 
+            secs_passed = clock.getTime()-start_time
+            sigma=this_stim_secs/5
+            mu = this_stim_secs/2
+            # actual_stim_secs=0.7759*sigma*2
+            this_contr = norm.pdf(secs_passed,mu, sigma)*this_condition['max_contr']* numpy.sqrt(2*numpy.pi)*sigma
+        else:
+            secs_passed = clock.getTime()-start_time
+            sigma=frameDur
+            mu = 3*sigma
+            if secs_passed < mu:
+                this_contr = norm.pdf(secs_passed, mu, sigma)*this_condition['max_contr'] * numpy.sqrt(2*numpy.pi)*sigma
+            elif secs_passed > (this_stim_secs-mu):
+                this_contr = norm.pdf(this_stim_secs-secs_passed, mu, sigma)*this_condition['max_contr']* numpy.sqrt(2*numpy.pi)*sigma
+            else:
+                this_contr = this_condition['max_contr']
+            
     elif params.contrast_mod_type == 'variable_triangular': # linear ramp up for half of this_stim_secs, then ramp down
         secs_passed = clock.getTime()-start_time
         if secs_passed <= this_stim_secs * 0.5: # first half
@@ -217,16 +237,17 @@ expInfo['psychopyVersion'] = psychopyVersion
 # make an output text file to save data
 fileName = _thisDir + os.sep + 'motion_temporal_threshold_data' + os.sep + '%s_%s' % (expInfo['Participant'] ,expInfo['expName'])
 # An ExperimentHandler isn't essential but helps with data saving
-thisExp = data.ExperimentHandler(name=expName, version='',
-    extraInfo=expInfo, runtimeInfo=None,
-    originPath='/Users/yxq5055/Box/Project_Sex_difference_on_Motion_Perception/codes/psychopy_procedure.py',
-    savePickle=True, saveWideText=True,
-    dataFileName=fileName)
 dataFile = open(fileName + '.csv', 'w')
 write_trial_data_header()
 
 win = visual.Window([params.window_pix_h, params.window_pix_v],fullscr=True, screen=0, monitor=params.monitor_name, units='deg')
-
+# get the real frame rate of the monitor
+frameRate= win.getActualFrameRate()
+if frameRate != None:
+    frameDur = 1.0 / frameRate
+else:
+    frameDur = 1.0 / params.frame_rate_hz  # could not measure, so guess
+    
 # Clock variables
 clock = core.Clock()
 countDown = core.CountdownTimer()
@@ -421,7 +442,7 @@ for current_run in total_run:
     current_run=current_run+1
     n_trials = 0
     for this_stim_secs, this_condition in staircase:
-        
+        frame_n=0
         # Print trial number, condition info to console
         n_trials += 1
         print('trial:', str(n_trials), 'condition: ' + this_condition['label'] + " | " + 'stim_secs: ' + str(this_stim_secs))
@@ -466,6 +487,8 @@ for current_run in total_run:
             
             # Modulate contrast
             this_contr = calculate_contrast()
+            if this_contr>=0.5*this_condition['max_contr']:
+                frame_n+=1
             pr_grating.color = this_contr
     
             # Draw next grating component
@@ -522,7 +545,7 @@ for current_run in total_run:
     
         # add the data to the staircase so it can calculate the next level
         staircase.addResponse(thisResp)
-        
+        actual_stim_secs=frame_n*frameDur
         # Write data to file
         write_trial_data_to_file()
     
