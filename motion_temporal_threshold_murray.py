@@ -423,8 +423,6 @@ win.flip()
 event.waitKeys()
 
 # Start staircase
-intru_break = visual.TextStim(win, pos=[0, 0], text = 'Well done! You have finished one session of trials. Press SPACE bar to continue.')
-
 current_run=0
 total_run=range(4)
 for current_run in total_run:
@@ -434,11 +432,6 @@ for current_run in total_run:
     else:
         staircase = data.MultiStairHandler(stairType='simple', conditions=params.conditions_simple, nTrials=params.staircase_ntrials)
     print('Created staircase: %s' % params.staircase_style)
-    if 0 <current_run:
-        intru_break.draw()
-        win.flip()
-        event.waitKeys()
-    current_run=current_run+1
     n_trials = 0
     for this_stim_secs, this_condition in staircase:
         frame_n=0
@@ -556,6 +549,13 @@ for current_run in total_run:
         win.flip()
         core.wait(rand_unif_int(params.iti_min, params.iti_max))
         # core.wait(params.fixation_grating_isi)
+    if 0 <current_run:
+        message='Well done! You have finished Session %i. \n\nPress SPACE bar to continue.'%(current_run)
+        intru_break = visual.TextStim(win, pos=[0, 0], text = message)
+        intru_break.draw()
+        win.flip()
+        event.waitKeys()
+    current_run=current_run+1
 #-----------------------------------------------------------------------------------------------------------
 thanksMsg.draw()
 win.flip()
