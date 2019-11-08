@@ -76,10 +76,10 @@ def calculate_contrast():
         else:
             this_contr = this_max_contrast
     elif params.contrast_mod_type == 'hybrid_gaussian':
-        if this_stim_secs < 0.750:  # when sigma=0.015, assume 8 sigma is stimuli duration, it is 120ms, FWHM is 18ms.
+        if this_stim_secs < frameDur*6:  # when sigma=0.015, assume 8 sigma is stimuli duration, it is 120ms, FWHM is 18ms.
             # 5 sigma, 
             secs_passed = clock.getTime()-start_time
-            sigma=this_stim_secs/5
+            sigma=this_stim_secs/6
             mu = this_stim_secs/2
             # actual_stim_secs=0.7759*sigma*2
             this_contr = norm.pdf(secs_passed,mu, sigma)*this_condition['max_contr']* numpy.sqrt(2*numpy.pi)*sigma
