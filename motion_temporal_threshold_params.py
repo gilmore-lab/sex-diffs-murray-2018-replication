@@ -85,4 +85,4 @@ isi_max = .50                          # Fixation/grating ISI max val
 iti_min = 1.0                           # ITI min val
 iti_max = 2.5                           # ITI max val
 
-win.close()
+# win.close()

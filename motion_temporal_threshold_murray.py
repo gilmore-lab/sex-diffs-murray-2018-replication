@@ -50,7 +50,7 @@ def calculate_stim_duration(frames, frameRate):
 def write_trial_data_header():
     dataFile.write('observer,gender')
     dataFile.write(',run_n,trial_n, motion_dir,grating_ori,key_resp,grating_deg')
-    dataFile.write(',contrast,spf,tf_hz,stim_secs,actual_frame, actual_stim_dur')
+    dataFile.write(',contrast,spf,tf_hz,stim_secs,actual_frame, FWHM')
     dataFile.write(',frame_rate_hz,frameDur,correct,rt')
     dataFile.write(',grating_start,grating_end\n')
 
@@ -280,17 +280,17 @@ donut = ShapeStim(win, vertices=donutVert, fillColor=params.donut_color, lineWid
 welcome  = visual.TextStim(win, pos=[0, 0], 
     text = 'Welcome to the motion duration threshold study.\n\nPress SPACE bar to continue.')
 instructions1 = visual.TextStim(win, pos=[0, 0], text = 'You will see a small patch of black and white stripes moving leftward or rightward.\n\nPress SPACE bar to continue.')
-instructions2 = visual.TextStim(win, pos=[0, 0], text = 'Your goal is to detect whether the patch is moving to the left or the right.\n\nPress SPACE bar to continue.')
+instructions2 = visual.TextStim(win, pos=[0, 0], text = 'Your need to detect whether the patch is moving to the left or the right.\n\nPress SPACE bar to continue.')
 instructions3a = visual.TextStim(win, pos=[0, + 3],
-    text='When the small black box appears, look at it. ')
+    text='At first, you will see the small black dot appears, look at it. ')
 instructions3b = visual.TextStim(win, pos=[0, -3],
-    text="Then press one of the arrow keys or sapce bar to start the display.\n\nPress SPACE bar to continue.")
-instructions4 = visual.TextStim(win, pos=[0, 0], text = 'Once the white dot appears, press the left arrow key if you see leftward motion and the right arrow key if you see rightward motion.\n\nIf you are not sure, just guess.\n\nYour goal is accuracy, not speed.\n\nPress SPACE bar to continue.')
-instructions5 = visual.TextStim(win, pos=[0, 0], text = 'To try some easy practice trials, hit any key to show the black fixation dot, look at the dot, and then press any key again to show the display.\n\nPress SPACE bar to continue.')
+    text="Then press SPACE bar to start the display, a small patch of black and white stripes. \n\nPress SPACE bar to continue.")
+instructions4 = visual.TextStim(win, pos=[0, 0], text = 'After the small patch of black and white stripes disappear, you will see a white dot. It is the response cue. Once the white dot appears, press the LEFT arrow key if you see leftward motion and the RIGHT arrow key if you see rightward motion.\n\nIf you are not sure, just guess.\n\nYour goal is accuracy, not speed.\n\nPress SPACE bar to continue.')
+instructions5 = visual.TextStim(win, pos=[0, 0], text = 'To try some easy practice trials, hit SPACE bar to show the black fixation dot, look at the dot, and then press any key again to show the display.\n\nPress SPACE bar to continue.')
 instructionsIncorrect = visual.TextStim(win, pos=[0, 0], text = 'Almost. Make sure to pay close attention.')
 instructionsCorrect = visual.TextStim(win, pos=[0, 0], text = 'Awesome.')
 instructions6 = visual.TextStim(win, pos=[0, 0], text = 'Do you have any questions? If not, press SPACE bar to get started!')
-instructions_practice=visual.TextStim(win, pos=[0, 0], text = 'Decide whether it is leftward or rightward motion.\nPress the space bar when you see the black dot to start. Press the arrow keys to make a response after you see the white dots. \n\nLet us have more practice trials. Press SPACE bar to continue.')
+instructions_practice=visual.TextStim(win, pos=[0, 0], text = 'Decide whether it is leftward or rightward motion.\n\nWhen you see the black dot, press the SPACE bar to start the display. \nWhen the white dot appears, press the arrow keys to make a response . \n\nLet us have more practice trials. Press SPACE bar to continue.')
 thanksMsg = visual.TextStim(win, pos=[0, 0],text="You're done! You can contact the researcher outside the room and feel free to have a break if you need!")
 
 #-----------------------------------------------------------------------------------------------------------
@@ -545,7 +545,7 @@ for current_run in total_run:
     
         # add the data to the staircase so it can calculate the next level
         staircase.addResponse(thisResp)
-        actual_stim_secs=frame_n*frameDur
+        actual_stim_secs=this_stim_secs-(6*sigma-0.7759*sigma*2)
         # Write data to file
         write_trial_data_to_file()
     
