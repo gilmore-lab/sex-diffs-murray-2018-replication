@@ -59,7 +59,7 @@ def write_trial_data_to_file():
     dataFile.write(',%i,%i,%i,%s,%s,%.2f' % (current_run,n_trials,this_dir,this_dir_str, thisKey, this_grating_degree))
     dataFile.write(',%.3f,%.3f,%.3f,%.9f,%i,%.9f' % (this_max_contrast, this_spf, this_tf, this_stim_secs,frame_n,actual_stim_secs))
     dataFile.write(',%.9f,%.9f,%.2f, %.3f' % (frameRate, frameDur, thisResp, rt))
-    dataFile.write(',%.3f,%.3f\n' % (start_resp_time, clock.getTime()))
+    dataFile.write(',%i,%.3f,%.3f\n' % ( start_resp_time, clock.getTime()))
     
 def calculate_contrast():
     if params.contrast_mod_type == 'fixed_trapezoidal':

@@ -68,7 +68,7 @@ conditions_QUEST = [
 #    {'label':'hi_contr_sma_disp', 'startVal':start_secs, 'startValSd':max_secs_sd, 'pThreshold':.82, 'max_contr':.98, 'minVal':min_secs, 'maxVal':max_secs, 'grating_deg':1.7, 'spf':spf, 'tf':tf, 'mask_type': mask_type}
 #    ]
 conditions_simple = [
-    {'label':'hi_contr', 'startVal':start_secs, 'minVal': min_secs, 'maxVal': max_secs, 'max_contr':.98,'grating_deg':grating_deg, 'stepSizes':[8,4,4,2,2,1],
+    {'label':'hi_contr', 'startVal':start_secs, 'minVal': min_secs, 'maxVal': max_secs, 'max_contr':.98,'grating_deg':grating_deg, 'stepSizes':[4,2,2,1],
     'spf':spf, 'tf':tf, 'mask_type':mask_type},
     ]
 
