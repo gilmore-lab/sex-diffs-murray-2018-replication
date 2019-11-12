@@ -59,7 +59,7 @@ def write_trial_data_to_file():
     dataFile.write(',%i,%i,%i,%s,%s,%.2f' % (current_run,n_trials,this_dir,this_dir_str, thisKey, this_grating_degree))
     dataFile.write(',%.3f,%.3f,%.3f,%.9f,%i,%.9f' % (this_max_contrast, this_spf, this_tf, this_stim_secs,frame_n,actual_stim_secs))
     dataFile.write(',%.9f,%.9f,%.2f, %.3f' % (frameRate, frameDur, thisResp, rt))
-    dataFile.write(',%i,%.3f,%.3f\n' % ( start_resp_time, clock.getTime()))
+    dataFile.write(',%.3f,%.3f\n' % ( start_resp_time, clock.getTime()))
     
 def calculate_contrast():
     if params.contrast_mod_type == 'fixed_trapezoidal':
@@ -288,7 +288,7 @@ instructions4 = visual.TextStim(win, pos=[0, 0], text = 'After the small patch o
 instructions5 = visual.TextStim(win, pos=[0, 0], text = 'Let us try some easy practice trials. \n\nPress SPACE bar to continue.')
 instructionsIncorrect = visual.TextStim(win, pos=[0, 0], text = 'Almost. Make sure to pay close attention.')
 instructionsCorrect = visual.TextStim(win, pos=[0, 0], text = 'Awesome.')
-instructions6 = visual.TextStim(win, pos=[0, 0], text = 'Do you have any questions? If not, press SPACE bar to get started!')
+instructions6 = visual.TextStim(win, pos=[0, 0], text = 'Good job!\n\n You will hear beep sound with correct answers. Your goal is accuracy, not speed.\n \n Do you have any questions? If not, press SPACE bar to start the real trials!')
 instructions_practice=visual.TextStim(win, pos=[0, 0], text = 'Decide whether it is leftward or rightward motion.\n\nWhen you see the black dot, press the SPACE bar to start the display. \nWhen the white dot appears, press the arrow keys to make a response . \n\nLet us have more practice trials. Press SPACE bar to continue.')
 thanksMsg = visual.TextStim(win, pos=[0, 0],text="You're done! You can contact the researcher outside the room and feel free to have a break if you need!")
 
